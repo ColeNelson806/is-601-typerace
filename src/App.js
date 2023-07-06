@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 
 const App = () => {
-  const buttonTextItems = [
+  const defaultButtonTextItems = [
     "Bears, beets, battlestar galactica",
     "What's Forrest Gump's password? 1Forrest1",
     "Where do programmers like to hang out? The Foo Bar",
@@ -14,6 +14,18 @@ const App = () => {
     startTime: null, 
     endTime:  null,
   };
+
+  const [buttonTextItems, setButtonTextItems] = useState(defaultButtonTextItems)
+  const [customSnippet, setCustomSnippet] = useState("");
+  const updateCustomSnippetText = event => {
+    setCustomSnippet(event.target.value)
+  }
+
+  const addCustomSnippet = (newCustom) => {
+    buttonTextItems.push(newCustom);
+    setButtonTextItems(buttonTextItems);
+    setCustomSnippet("");
+  }
 
   const [gameState, setGameState] = useState(initialGameState);
   const [highScore, setHighScore] = useState(0);
@@ -59,14 +71,17 @@ const App = () => {
       <h4>{gameState.victory ? `${updateHighScore(gameState.endTime)}Done! Woot! Time: ${gameState.endTime} ms` : null}</h4>
       <input id="inputTextbox" value={userText} onChange={updateUserText}/>
       <hr />
-      {gameState.victory ? <h5>Click a snippet to reset!</h5> : null}
-      {buttonTextItems.map((textItem, index) => <button onClick={() => { 
+      {gameState.victory ? <h4>Click a snippet to reset!</h4> : null}
+      {Object.values(buttonTextItems).map((textItem, index) => <button onClick={() => { 
         chooseSnippet(index);  // Selects the snippet of text to display above text box and also the snippet to compare against
         setUserText(""); // Resets the text box's value to be blank
         // updateHighScore(gameState.endTime);
         document.getElementById("inputTextbox").focus();
         resetGameState(); // Resets the victory status, and starts a new time count. 
       }}>{textItem}</button>)}
+      <p>Add your own snippet!</p>
+      <input value={customSnippet} onChange={updateCustomSnippetText}/>
+      <button onClick={() => addCustomSnippet(customSnippet)}>Add</button>
     </div>
   );
 };
