@@ -12,10 +12,11 @@ const App = () => {
   const initialGameState = { 
     victory: false, 
     startTime: null, 
-    endTime: null,
+    endTime:  null,
   };
 
   const [gameState, setGameState] = useState(initialGameState);
+  const [highScore, setHighScore] = useState(0);
   const [snippet, setSnippet] = useState("");
   const [userText, setUserText] = useState("");
   const updateUserText = event => { 
@@ -25,7 +26,7 @@ const App = () => {
       setGameState({
         ...gameState,
         victory: true,
-        endTime: new Date().getTime() - gameState.startTime
+        endTime: new Date().getTime() - gameState.startTime,
       });
     }
   };
@@ -39,19 +40,31 @@ const App = () => {
     setGameState({victory: false, startTime: new Date().getTime(), endTime: null });
   }
 
+  const updateHighScore = (speed) => {
+    if(highScore === 0 && gameState.endTime !== null) {
+      setHighScore(speed);
+    } else if(gameState.endTime !== null && speed < highScore){
+      setHighScore(speed);
+    }
+    return "";
+  }
+
   return (
     <div>
       <h2>TypeRace</h2>
-      <hr />
+      <hr/>
+      <h3>High Score: {highScore} ms</h3>
       <h3>Snippet</h3>
       <div>{snippet}</div>
-      <h4>{gameState.victory ? `Done! Woot! Time: ${gameState.endTime}ms` : null}</h4>
-      <input value={userText} onChange={updateUserText}/>
+      <h4>{gameState.victory ? `${updateHighScore(gameState.endTime)}Done! Woot! Time: ${gameState.endTime} ms` : null}</h4>
+      <input id="inputTextbox" value={userText} onChange={updateUserText}/>
       <hr />
       {gameState.victory ? <h5>Click a snippet to reset!</h5> : null}
       {buttonTextItems.map((textItem, index) => <button onClick={() => { 
         chooseSnippet(index);  // Selects the snippet of text to display above text box and also the snippet to compare against
-        setUserText("") // Resets the text box's value to be blank
+        setUserText(""); // Resets the text box's value to be blank
+        // updateHighScore(gameState.endTime);
+        document.getElementById("inputTextbox").focus();
         resetGameState(); // Resets the victory status, and starts a new time count. 
       }}>{textItem}</button>)}
     </div>
