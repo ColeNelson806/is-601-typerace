@@ -22,8 +22,14 @@ const App = () => {
   }
 
   const addCustomSnippet = (newCustom) => {
-    buttonTextItems.push(newCustom);
-    setButtonTextItems(buttonTextItems);
+    const matchingIndex = buttonTextItems.indexOf(newCustom)
+    if (matchingIndex === -1){
+      buttonTextItems.push(newCustom);
+      setButtonTextItems(buttonTextItems);
+    } else {
+      buttonTextItems.splice(matchingIndex, 1);
+      setButtonTextItems(buttonTextItems);
+    }
     setCustomSnippet("");
   }
 
@@ -79,8 +85,8 @@ const App = () => {
         document.getElementById("inputTextbox").focus();
         resetGameState(); // Resets the victory status, and starts a new time count. 
       }}>{textItem}</button>)}
-      <p>Add your own snippet!</p>
-      <input value={customSnippet} onChange={updateCustomSnippetText}/>
+      <p>Type a snippet you want to add or remove.</p>
+      <input value={customSnippet} onChange={updateCustomSnippetText} type=""/>
       <button onClick={() => addCustomSnippet(customSnippet)}>Add</button>
     </div>
   );
