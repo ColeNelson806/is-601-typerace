@@ -1,71 +1,79 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 
 const App = () => {
-  const defaultButtonTextItems = [
-    "Bears, beets, battlestar galactica",
-    "What's Forrest Gump's password? 1Forrest1",
-    "Where do programmers like to hang out? The Foo Bar",
-    "Buggy Bunny",
-  ];
-  // gameState ~ victory, startTime, 
   const initialGameState = { 
-    victory: false, 
     startTime: null, 
-    endTime:  null,
+    timeTaken:  null,
   };
 
-  const [buttonTextItems, setButtonTextItems] = useState(defaultButtonTextItems)
+  const [CUSTOM_SNIPPETS, setCUSTOM_SNIPPETS] = useState(false)
   const [customSnippet, setCustomSnippet] = useState("");
   const updateCustomSnippetText = event => {
     setCustomSnippet(event.target.value)
   }
-
-  const addCustomSnippet = (newCustom) => {
-    const matchingIndex = buttonTextItems.indexOf(newCustom)
-    if (matchingIndex === -1){
-      buttonTextItems.push(newCustom);
-      setButtonTextItems(buttonTextItems);
-    } else {
-      buttonTextItems.splice(matchingIndex, 1);
-      setButtonTextItems(buttonTextItems);
-    }
-    setCustomSnippet("");
-  }
+  
+  // const addCustomSnippet = (newCustom) => {
+  //   const matchingIndex = buttonTextItems.indexOf(newCustom)
+  //   if (matchingIndex === -1){
+  //     buttonTextItems.push(newCustom);
+  //     setButtonTextItems(buttonTextItems);
+  //   } else {
+  //     buttonTextItems.splice(matchingIndex, 1);
+  //     setButtonTextItems(buttonTextItems);
+  //   }
+  //   setCustomSnippet("");
+  // }
 
   const [gameState, setGameState] = useState(initialGameState);
   const [highScore, setHighScore] = useState(0);
   const [snippet, setSnippet] = useState("");
   const [userText, setUserText] = useState("");
+  const [hasError, setErrors] = useState(false);
+  const [films, setFilms] = useState([]);
+
   const updateUserText = event => { 
     setUserText(event.target.value);
 
     if(event.target.value === snippet) {
       setGameState({
         ...gameState,
-        victory: true,
-        endTime: new Date().getTime() - gameState.startTime,
+        
+        timeTaken: new Date().getTime() - gameState.startTime,
       });
     }
   };
 
-  const chooseSnippet = index => { 
-    setSnippet(buttonTextItems[index]);
-    setGameState({victory: false, startTime: new Date().getTime() });
+  const chooseSnippet = selectedSnippet => { 
+    setSnippet(selectedSnippet);
+    setGameState({ ...gameState, startTime: new Date().getTime() });
   }; 
 
+  const fetchData = async () => {
+    const response = await fetch("https://ghibliapi.vercel.app/films/58611129-2dbc-4a81-a72f-77ddfc1b1b49")
+    response
+      .json()
+      .then(response => setFilms([response]))
+      .catch(err => setErrors(err));
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const resetGameState = () => {
-    setGameState({victory: false, startTime: new Date().getTime(), endTime: null });
+    setGameState({...initialGameState, startTime: new Date().getTime()});
   }
 
   const updateHighScore = (speed) => {
-    if(highScore === 0 && gameState.endTime !== null) {
+    if(highScore === 0 && gameState.timeTaken !== null) {
       setHighScore(speed);
-    } else if(gameState.endTime !== null && speed < highScore){
+    } else if(gameState.timeTaken !== null && speed < highScore){
       setHighScore(speed);
     }
     return "";
   }
+
 
   return (
     <div>
@@ -74,23 +82,90 @@ const App = () => {
       <h3>High Score: {highScore} ms</h3>
       <h3>Snippet</h3>
       <div>{snippet}</div>
-      <h4>{gameState.victory ? `${updateHighScore(gameState.endTime)}Done! Woot! Time: ${gameState.endTime} ms` : null}</h4>
+      <h4>{gameState.timeTaken ? `${updateHighScore(gameState.timeTaken)}Done! Woot! Time: ${gameState.timeTaken} ms` : null}</h4>
       <input id="inputTextbox" value={userText} onChange={updateUserText}/>
       <hr />
-      {gameState.victory ? <h4>Click a snippet to reset!</h4> : null}
-      {Object.values(buttonTextItems).map((textItem, index) => <button onClick={() => { 
-        chooseSnippet(index);  // Selects the snippet of text to display above text box and also the snippet to compare against
-        setUserText(""); // Resets the text box's value to be blank
-        // updateHighScore(gameState.endTime);
-        document.getElementById("inputTextbox").focus();
-        resetGameState(); // Resets the victory status, and starts a new time count. 
-      }}>{textItem}</button>)}
-      <p>Type a snippet you want to add or remove.</p>
-      <input value={customSnippet} onChange={updateCustomSnippetText} type=""/>
-      <button onClick={() => addCustomSnippet(customSnippet)}>Add</button>
+      {gameState.timeTaken ? <h4>Click a new snippet or reset the categories.</h4> : null}
+      <SnippetSelector chooseSnippet={chooseSnippet} films={films} setUserText={setUserText} resetGameState={resetGameState}/>
+      <>{hasError ? "An error has occurred": null}</>
+      {CUSTOM_SNIPPETS ?
+        <>
+          <hr />
+          <p>Type a snippet you want to add or remove.</p>
+          <input value={customSnippet} onChange={updateCustomSnippetText} type=""/>
+          <button /* onClick={() => addCustomSnippet(customSnippet)}*/>Add</button>
+          <hr />
+          <button onClick={() => setCUSTOM_SNIPPETS(false)}>~BROKEN~ Disable Custom Snippets ~BROKEN~</button>
+        </>
+      : <><hr/><button onClick={() => setCUSTOM_SNIPPETS(true)}>~BROKEN~ Enable Custom Snippets ~BROKEN~</button></>}
+    </div>
+  );
+};
+export default App;
+
+const SnippetSelector = ({films, chooseSnippet, setUserText, resetGameState}) => {
+  const selections = [
+    {id : 1, title : "Film Title"},
+    {id : 2, title : "Description"},
+    {id : 3, title : "Director"},
+  ];
+
+  const [whatToType, setWhatToType] = useState(null);
+  const chooseWhatToType = (selection) => setWhatToType(selection);
+
+  const changeType = () => {
+    setWhatToType(null);
+  }
+
+  return (
+    <div>
+      {!whatToType ?
+      <div>
+        <h4>What category would you like to type?</h4>
+        <SelectorButton buttonNames={selections} onSelection={chooseWhatToType} setUserText={setUserText} resetGameState={resetGameState}/>
+      </div>
+      : null}
+      {whatToType && films?
+      <div>
+        <h4>Choose One</h4>
+        <SelectorButton buttonNames={films} onSelection={chooseSnippet} selectionType={whatToType} setUserText={setUserText} resetGameState={resetGameState}/>
+      </div>
+      : null}
+      <br/>
+      <button onClick={changeType}>Reset Category</button>
     </div>
   );
 };
 
-export default App;
-
+const SelectorButton = ({buttonNames, onSelection, selectionType, setUserText, resetGameState}) => {
+  switch(selectionType) {
+    case "Film Title":
+      return (buttonNames.map(buttonName => <button key={buttonName.id} onClick={() => {
+        onSelection(buttonName.title)
+        setUserText("");
+        resetGameState();
+        document.getElementById("inputTextbox").focus();
+      }}>{buttonName.title}</button>));
+    case "Description":
+      return (buttonNames.map(buttonName => <button key={buttonName.id} onClick={() => {
+        onSelection(buttonName.description)
+        setUserText("");
+        resetGameState();
+        document.getElementById("inputTextbox").focus();
+      }}>{buttonName.description}</button>));
+    case "Director":
+      return (buttonNames.map(buttonName => <button key={buttonName.id} onClick={() => {
+        onSelection(buttonName.director)
+        setUserText("");
+        resetGameState();
+        document.getElementById("inputTextbox").focus();
+      }}>{buttonName.director}</button>));
+    default:
+      return (buttonNames.map(buttonName => <button key={buttonName.id} onClick={() => {
+        onSelection(buttonName.title)
+        setUserText("");
+        resetGameState();
+        document.getElementById("inputTextbox").focus();
+      }}>{buttonName.title}</button>));
+  }
+};
