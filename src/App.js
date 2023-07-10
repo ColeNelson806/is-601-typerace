@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
+import "./App.css";
 
 const App = () => {
   const initialGameState = { 
@@ -74,30 +75,30 @@ const App = () => {
     return "";
   }
 
-
   return (
     <div>
-      <h2>TypeRace</h2>
+      <h2 className="leftMarg" id="gameName">TypeRace</h2>
       <hr/>
-      <h3>High Score: {highScore} ms</h3>
-      <h3>Snippet</h3>
-      <div>{snippet}</div>
-      <h4>{gameState.timeTaken ? `${updateHighScore(gameState.timeTaken)}Done! Woot! Time: ${gameState.timeTaken} ms` : null}</h4>
-      <input id="inputTextbox" value={userText} onChange={updateUserText}/>
+      <h3 className="text" id="highScore">High Score: {highScore} ms</h3>
       <hr />
-      {gameState.timeTaken ? <h4>Click a new snippet or reset the categories.</h4> : null}
+      <h3 className="leftMarg text" id="snippetText">Snippet</h3>
+      <div className="leftMarg text" id="snippetAct">{snippet}</div>
+      <h4 className="leftMarg text">{gameState.timeTaken ? `${updateHighScore(gameState.timeTaken)}Done! Woot! Time: ${gameState.timeTaken} ms` : null}</h4>
+      <input className="leftMarg" id="inputTextbox" value={userText} onChange={updateUserText}/>
+      <hr />
+      {gameState.timeTaken ? <h4 className="leftMarg text">Click a new snippet or reset the categories.</h4> : null}
       <SnippetSelector chooseSnippet={chooseSnippet} films={films} setUserText={setUserText} resetGameState={resetGameState}/>
       <>{hasError ? "An error has occurred": null}</>
       {CUSTOM_SNIPPETS ?
         <>
           <hr />
-          <p>Type a snippet you want to add or remove.</p>
+          <p className="leftMarg text">Type a snippet you want to add or remove.</p>
           <input value={customSnippet} onChange={updateCustomSnippetText} type=""/>
           <button /* onClick={() => addCustomSnippet(customSnippet)}*/>Add</button>
           <hr />
-          <button onClick={() => setCUSTOM_SNIPPETS(false)}>~BROKEN~ Disable Custom Snippets ~BROKEN~</button>
+          <button className="outerDiv BROKEN" onClick={() => setCUSTOM_SNIPPETS(false)}>~BROKEN~ Disable Custom Snippets ~BROKEN~</button>
         </>
-      : <><hr/><button onClick={() => setCUSTOM_SNIPPETS(true)}>~BROKEN~ Enable Custom Snippets ~BROKEN~</button></>}
+      : <><hr/><button className="outerDiv BROKEN" onClick={() => setCUSTOM_SNIPPETS(true)}>~BROKEN~ Enable Custom Snippets ~BROKEN~</button></>}
     </div>
   );
 };
@@ -118,21 +119,21 @@ const SnippetSelector = ({films, chooseSnippet, setUserText, resetGameState}) =>
   }
 
   return (
-    <div>
+    <div className="outerDiv">
       {!whatToType ?
       <div>
-        <h4>What category would you like to type?</h4>
+        <h4 className="text">What category would you like to type?</h4>
         <SelectorButton buttonNames={selections} onSelection={chooseWhatToType} setUserText={setUserText} resetGameState={resetGameState}/>
       </div>
       : null}
       {whatToType && films?
       <div>
-        <h4>Choose One</h4>
+        <h4 className="text">Choose One</h4>
         <SelectorButton buttonNames={films} onSelection={chooseSnippet} selectionType={whatToType} setUserText={setUserText} resetGameState={resetGameState}/>
       </div>
       : null}
       <br/>
-      <button onClick={changeType}>Reset Category</button>
+      <button cclassName="outerDiv" onClick={changeType}>Reset Category</button>
     </div>
   );
 };

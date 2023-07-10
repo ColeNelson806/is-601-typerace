@@ -1,5 +1,51 @@
+* {
+  background-color:whitesmoke;
+}
+
 .App {
   text-align: center;
+}
+
+.text{
+  color: #282c34;
+}
+
+#gameName {
+  color: #1d7c96;
+  margin: 5px 10px 10px 5%;
+}
+#highScore {
+  color: #1d7c96;
+  text-align: center;
+}
+
+input {
+  background-color: white;
+  color: black;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  min-width: 33%;
+}
+
+button {
+  background-color:white;
+  color: black;
+  
+}
+
+.outerDiv{
+  margin-left: 25px;
+  margin-right: 25px;
+  margin-bottom: 20px;
+}
+
+.leftMarg {
+  margin-left: 25px;
+  margin-right: 25px;
+}
+
+.BROKEN {
+  color: red;
 }
 
 .App-logo {
