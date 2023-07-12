@@ -30,8 +30,26 @@ const App = () => {
   const [highScore, setHighScore] = useState(0);
   const [snippet, setSnippet] = useState("");
   const [userText, setUserText] = useState("");
-  const [hasError, setErrors] = useState(false);
+  const [hasError, setHasErrors] = useState(false);
   const [films, setFilms] = useState([]);
+  const [wins, setWins] = useState(0);
+
+  useEffect(() => {
+    document.title = gameState.timeTaken ? "Victory!" : "";
+    if (gameState.timeTaken) setWins(wins => wins+1);
+  }, [gameState.timeTaken]);
+
+  const fetchData = async () => {
+    const response = await fetch("https://ghibliapi.vercel.app/films?limit=3")
+    response
+      .json()
+      .then(response => setFilms(response))
+      .catch(err => setHasErrors(err));
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const updateUserText = event => { 
     setUserText(event.target.value);
@@ -49,18 +67,6 @@ const App = () => {
     setSnippet(selectedSnippet);
     setGameState({ ...gameState, startTime: new Date().getTime() });
   }; 
-
-  const fetchData = async () => {
-    const response = await fetch("https://ghibliapi.vercel.app/films/58611129-2dbc-4a81-a72f-77ddfc1b1b49")
-    response
-      .json()
-      .then(response => setFilms([response]))
-      .catch(err => setErrors(err));
-  }
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const resetGameState = () => {
     setGameState({...initialGameState, startTime: new Date().getTime()});
@@ -80,9 +86,10 @@ const App = () => {
       <h2 className="leftMarg" id="gameName">TypeRace</h2>
       <hr/>
       <h3 className="text" id="highScore">High Score: {highScore} ms</h3>
+      <h3 className="text" id ="winCounter">Win Counter: {wins}</h3>
       <hr />
-      <h3 className="leftMarg text" id="snippetText">Snippet</h3>
-      <div className="leftMarg text" id="snippetAct">{snippet}</div>
+      <h3 className="leftMarg text">Snippet</h3>
+      <div className="leftMarg text">{snippet}</div>
       <h4 className="leftMarg text">{gameState.timeTaken ? `${updateHighScore(gameState.timeTaken)}Done! Woot! Time: ${gameState.timeTaken} ms` : null}</h4>
       <input className="leftMarg" id="inputTextbox" value={userText} onChange={updateUserText}/>
       <hr />
@@ -97,7 +104,7 @@ const App = () => {
           <button /* onClick={() => addCustomSnippet(customSnippet)}*/>Add</button>
           <hr />
           <button className="outerDiv BROKEN" onClick={() => setCUSTOM_SNIPPETS(false)}>~BROKEN~ Disable Custom Snippets ~BROKEN~</button>
-        </>
+        </> // Custom snippet going to be changed from self entry/delete to instead allow you to change the amount of films that are retrieved
       : <><hr/><button className="outerDiv BROKEN" onClick={() => setCUSTOM_SNIPPETS(true)}>~BROKEN~ Enable Custom Snippets ~BROKEN~</button></>}
     </div>
   );
@@ -114,9 +121,7 @@ const SnippetSelector = ({films, chooseSnippet, setUserText, resetGameState}) =>
   const [whatToType, setWhatToType] = useState(null);
   const chooseWhatToType = (selection) => setWhatToType(selection);
 
-  const changeType = () => {
-    setWhatToType(null);
-  }
+  const changeType = () => {setWhatToType(null)}
 
   return (
     <div className="outerDiv">
@@ -133,40 +138,44 @@ const SnippetSelector = ({films, chooseSnippet, setUserText, resetGameState}) =>
       </div>
       : null}
       <br/>
-      <button cclassName="outerDiv" onClick={changeType}>Reset Category</button>
+      <button onClick={() => {changeType(); setUserText(""); chooseSnippet(""); resetGameState();}}>Reset Category</button>
     </div>
   );
 };
+
+export { SnippetSelector };
 
 const SelectorButton = ({buttonNames, onSelection, selectionType, setUserText, resetGameState}) => {
   switch(selectionType) {
     case "Film Title":
       return (buttonNames.map(buttonName => <button key={buttonName.id} onClick={() => {
-        onSelection(buttonName.title)
-        setUserText("");
-        resetGameState();
-        document.getElementById("inputTextbox").focus();
+        onSelection(buttonName.title);
+        if (setUserText) {setUserText("")};
+        if (resetGameState) {resetGameState()};
+        if (document.getElementById("inputTextbox")) {document.getElementById("inputTextbox").focus()};
       }}>{buttonName.title}</button>));
     case "Description":
       return (buttonNames.map(buttonName => <button key={buttonName.id} onClick={() => {
-        onSelection(buttonName.description)
-        setUserText("");
-        resetGameState();
-        document.getElementById("inputTextbox").focus();
+        onSelection(buttonName.description);
+        if (setUserText) {setUserText("")};
+        if (resetGameState) {resetGameState()};
+        if (document.getElementById("inputTextbox")) {document.getElementById("inputTextbox").focus()};
       }}>{buttonName.description}</button>));
     case "Director":
       return (buttonNames.map(buttonName => <button key={buttonName.id} onClick={() => {
-        onSelection(buttonName.director)
-        setUserText("");
-        resetGameState();
-        document.getElementById("inputTextbox").focus();
+        onSelection(buttonName.director);
+        if (setUserText) {setUserText("")};
+        if (resetGameState) {resetGameState()};
+        if (document.getElementById("inputTextbox")) {document.getElementById("inputTextbox").focus()};
       }}>{buttonName.director}</button>));
     default:
       return (buttonNames.map(buttonName => <button key={buttonName.id} onClick={() => {
-        onSelection(buttonName.title)
-        setUserText("");
-        resetGameState();
-        document.getElementById("inputTextbox").focus();
+        onSelection(buttonName.title);
+        if (setUserText) {setUserText("")};
+        if (resetGameState) {resetGameState()};
+        if (document.getElementById("inputTextbox")) {document.getElementById("inputTextbox").focus()};
       }}>{buttonName.title}</button>));
   }
 };
+
+export { SelectorButton };

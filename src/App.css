@@ -14,7 +14,13 @@
   color: #1d7c96;
   margin: 5px 10px 10px 5%;
 }
+
 #highScore {
+  color: #1d7c96;
+  text-align: center;
+}
+
+#winCounter {
   color: #1d7c96;
   text-align: center;
 }
