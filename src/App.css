@@ -50,6 +50,10 @@ button {
   margin-right: 25px;
 }
 
+#errorDisplay {
+  color: red;
+}
+
 .BROKEN {
   color: red;
 }

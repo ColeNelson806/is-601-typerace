@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import "./App.css";
+import { FetchData } from "./FetchData.js";
 
 const App = () => {
   const initialGameState = { 
@@ -10,10 +11,7 @@ const App = () => {
 
   const [CUSTOM_SNIPPETS, setCUSTOM_SNIPPETS] = useState(false)
   const [customSnippet, setCustomSnippet] = useState("");
-  const updateCustomSnippetText = event => {
-    setCustomSnippet(event.target.value)
-  }
-  
+
   // const addCustomSnippet = (newCustom) => {
   //   const matchingIndex = buttonTextItems.indexOf(newCustom)
   //   if (matchingIndex === -1){
@@ -39,17 +37,21 @@ const App = () => {
     if (gameState.timeTaken) setWins(wins => wins+1);
   }, [gameState.timeTaken]);
 
-  const fetchData = async () => {
-    const response = await fetch("https://ghibliapi.vercel.app/films?limit=3")
-    response
-      .json()
-      .then(response => setFilms(response))
-      .catch(err => setHasErrors(err));
-  }
-
   useEffect(() => {
-    fetchData();
+    console.log(FetchData);
+    console.log(typeof FetchData);
+    console.log(FetchData());
+    console.log(typeof FetchData());
+
+    FetchData().then((value) => {
+      if (typeof value == "boolean") setHasErrors(true);
+      if (typeof value == "object") setFilms(value);
+    })
   }, []);
+
+  const updateCustomSnippetText = event => {
+    setCustomSnippet(event.target.value)
+  };
 
   const updateUserText = event => { 
     setUserText(event.target.value);
@@ -81,6 +83,8 @@ const App = () => {
     return "";
   }
 
+
+
   return (
     <div>
       <h2 className="leftMarg" id="gameName">TypeRace</h2>
@@ -94,8 +98,8 @@ const App = () => {
       <input className="leftMarg" id="inputTextbox" value={userText} onChange={updateUserText}/>
       <hr />
       {gameState.timeTaken ? <h4 className="leftMarg text">Click a new snippet or reset the categories.</h4> : null}
+      <h2 className="leftMarg" id="errorDisplay">{hasError ? "An error has occurred": null}</h2>
       <SnippetSelector chooseSnippet={chooseSnippet} films={films} setUserText={setUserText} resetGameState={resetGameState}/>
-      <>{hasError ? "An error has occurred": null}</>
       {CUSTOM_SNIPPETS ?
         <>
           <hr />
@@ -110,6 +114,31 @@ const App = () => {
   );
 };
 export default App;
+
+// const FetchData = async (setFilms, setHasErrors) => {
+//   const response = await fetch("https://ghibliapi.vercel.app/films?limit=3")
+//   response
+//     .json()
+//     .then(response => setFilms(response))
+//     .catch(err => setHasErrors(err));
+// }
+
+// const FetchData = (setFilms) => {
+//   setFilms(
+//     [
+//       {
+//         "title": "FakeTitle1",
+//         "description": "FakeDescription1",
+//         "director": "FakeDirector1"
+//       },
+//       {
+//         "title": "FakeTitle2",
+//         "description": "FakeDescription2",
+//         "director": "FakeDirector2"
+//       }
+//     ]
+//   )
+// }
 
 const SnippetSelector = ({films, chooseSnippet, setUserText, resetGameState}) => {
   const selections = [
@@ -142,8 +171,6 @@ const SnippetSelector = ({films, chooseSnippet, setUserText, resetGameState}) =>
     </div>
   );
 };
-
-export { SnippetSelector };
 
 const SelectorButton = ({buttonNames, onSelection, selectionType, setUserText, resetGameState}) => {
   switch(selectionType) {
@@ -178,4 +205,4 @@ const SelectorButton = ({buttonNames, onSelection, selectionType, setUserText, r
   }
 };
 
-export { SelectorButton };
+export { SnippetSelector, FetchData, SelectorButton };

@@ -1,22 +1,162 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import App, { SnippetSelector, SelectorButton } from './App';
+import App, { SnippetSelector } from './App';
+import { FetchData } from "./FetchData";
+
+// [
+//   {
+//     title: "FakeTitle1",
+//     description: "FakeDescription1",
+//     director: "FakeDirector1"
+//   },
+//   {
+//     title: "FakeTitle2",
+//     description: "FakeDescription2",
+//     director: "FakeDirector2"
+//   }
+// ]
+
+// jest.mock("./FetchData");
+// FetchData.mockImplementation(() => {
+//   Promise.resolve(
+//   [
+//     {
+//       title: "FakeTitle1",
+//       description: "FakeDescription1",
+//       director: "FakeDirector1"
+//     },
+//     {
+//       title: "FakeTitle2",
+//       description: "FakeDescription2",
+//       director: "FakeDirector2"
+//     }
+//   ]
+// )})
+
+jest.mock("./FetchData");
+
+
+// FetchData.FetchData = jest.fn().mockResolvedValue(
+//   [
+//     {
+//       title: "FakeTitle1",
+//       description: "FakeDescription1",
+//       director: "FakeDirector1"
+//     },
+//     {
+//       title: "FakeTitle2",
+//       description: "FakeDescription2",
+//       director: "FakeDirector2"
+//     }
+//   ]
+// )
+
 
 describe("App", () => {
-  test("WIP", () => {
-    render(<App/>)
-  })
+  describe("Reset Category Button", () => {
+    //console.log(FetchData)
+
+    // test("TestTest Film Title Found After Click", () => {
+    //   expect(FetchData).toHaveBeenCalledTimes(0); // Hasnt been called
+    //   render(<App/>);
+    //   expect(FetchData).toHaveBeenCalledTimes(1); // Has been called during render 
+    //   expect(screen.getByText("Film Title")).toBeInTheDocument(); // Film Title is found
+    //   fireEvent.click(screen.getByText("Film Title")); // Film title is clicked
+
+    //   expect(screen.getByText("Film Title")).toBeInTheDocument();
+    // });
+
+    test("TestTest FakeTitle1 Found After Click", () => {
+      // expect(FetchData).toHaveBeenCalledTimes(0); // Hasnt been called
+      // render(<App/>);
+      // expect(FetchData).toHaveBeenCalledTimes(1); // Has been called during render 
+      // expect(screen.getByText("Film Title")).toBeInTheDocument(); // Film Title is found
+      // fireEvent.click(screen.getByText("Film Title")); // Film title is clicked
+      
+      // expect(screen.getByText("FakeTitle1")).toBeInTheDocument();
+
+      // console.log(FetchData())
+      // console.log(typeof FetchData())
+      //console.log(FetchData)
+
+      // console.log("type of")
+      FetchData.mockResolvedValue(15)
+      console.log(typeof FetchData)
+      console.log("actual")
+      console.log(FetchData)
+      console.log("then")
+      //FetchData.then((value) => {console.log(value)})
+      expect(FetchData).toEqual(15);
+
+
+    }); 
+    // test("TestTest FakeTitle2 Found After Click", () => {
+    //   expect(FetchData).toHaveBeenCalledTimes(0); // Hasnt been called
+    //   render(<App/>);
+    //   expect(FetchData).toHaveBeenCalledTimes(1); // Has been called during render 
+    //   expect(screen.getByText("Film Title")).toBeInTheDocument(); // Film Title is found
+    //   fireEvent.click(screen.getByText("Film Title")); // Film title is clicked
+      
+    //   expect(screen.getByText("FakeTitle2")).toBeInTheDocument();
+    // });
+    // test("TestTest Castle Found After Click", () => {
+    //   expect(FetchData).toHaveBeenCalledTimes(0); // Hasnt been called
+    //   render(<App/>);
+    //   expect(FetchData).toHaveBeenCalledTimes(1); // Has been called during render 
+    //   expect(screen.getByText("Film Title")).toBeInTheDocument(); // Film Title is found
+    //   fireEvent.click(screen.getByText("Film Title")); // Film title is clicked
+      
+    //   expect(screen.getByText("Castle")).toBeInTheDocument();
+    // });
+
+    test("empties typing textbox when clicked", () => {
+      
+      // expect(FetchData).toHaveBeenCalledTimes(0); // Hasnt been called
+
+      // console.log(FetchData.FetchData);
+      // console.log(typeof FetchData.FetchData);
+
+      //render(<App/>);
+
+      // expect(FetchData).toHaveBeenCalledTimes(1); // Has been called during render 
+
+      // expect(screen.getByText("Film Title")).toBeInTheDocument(); // Film Title is found
+      //fireEvent.click(screen.getByText("Film Title")); // Film title is clicked
+
+      //expect(screen.getByText("FakeTitle1")).toBeInTheDocument(); // Film title is no longer found 
+
+      
+
+      // ?????????????????????????????????????????????????????????????????????
+      //expect(screen.getByText("Film Title")).toBeInTheDocument();
+      //expect(screen.getByText("FakeTitle1")).toBeInTheDocument();
+      //expect(screen.getByText("FakeTitle2")).toBeInTheDocument();
+      //expect(screen.getByText("Castle")).toBeInTheDocument();
+    });
+
+    test("unrenders chosen snippet when clicked", () => {
+      //render(<App/>);
+    });
+
+    test("unrenders victory text when clicked", () => {
+      //render(<App/>);
+    });
+
+    test("unrenders reset information text when clicked", () => {
+      //render(<App/>);
+    });
+
+  });
 });
 
 describe("Snippet Selector", () => { 
-  describe("renders category buttons with intended labels", () => {
+  describe("initial render renders category buttons with intended labels", () => {
     test("Film Title", () => {
       const fakeFilmObj = [{id: 1, title : "fakeTitle"}];
 
       render(<SnippetSelector films={fakeFilmObj}/>);
       const buttonLabel = screen.getByText("Film Title"); //Searched DOM by text, text being "Film Title"
-      
+
       expect(buttonLabel).toBeInTheDocument(); // Tests to see if "Film Title" is found
-                                               // Instead do getByAllText + Map + filter by button & the key id?
     });
 
     test("Description", () => {
@@ -24,7 +164,7 @@ describe("Snippet Selector", () => {
 
       render(<SnippetSelector films={fakeFilmObj}/>);
       const buttonLabel = screen.getByText("Description");
-      
+
       expect(buttonLabel).toBeInTheDocument();
     });
 
@@ -73,43 +213,6 @@ describe("Snippet Selector", () => {
       expect(testButton).toBeInTheDocument();
     });
   });
-
-  describe("Reset Category button", () => {
-    test("WIP", () => {
-      render(<SnippetSelector/>);
-    })
-  });
 });
 
-describe("Selector Button Buttons", () => {
-  describe("attempt to render intended snippet when a category was chosen", () => {
-    test.each`
-    buttonCategory  | filmObjId | filmObjCategory   |  filmObjCategoryData
-    ${"Fake Title"} | ${1}      | ${"title"}        | ${"Fake Title Data"}
-    ${"Description"}| ${2}      | ${"description"}  | ${"Fake Description Data"}
-    ${"Director"}   | ${3}      | ${"director"}     | ${"Fake Director Data"}
-    `(`when $buttonCategory is clicked, then rendered snippet is $filmObjCategoryData`, ({buttonCategory, filmObjId, filmObjCategory, filmObjCategoryData}) => {
-      const fakeFilmObj = [{id : filmObjId, [filmObjCategory]: filmObjCategoryData}];
-      const mockChooseSnippet = jest.fn();
-
-      render(<SelectorButton buttonNames={fakeFilmObj} onSelection={mockChooseSnippet} selectionType={buttonCategory}/>)
-      fireEvent.click(screen.getByText(filmObjCategoryData));
-
-      // The mock here is what function would normally run to render, will move to actual app testing? WAIT FOR RESPONSE TO NOT WASTE MY TIME
-      expect(mockChooseSnippet).toHaveBeenCalledWith(filmObjCategoryData); 
-    });
-  });
-//      const snippetLabel = screen.getByText(filmObjCategoryData); expect(snippetLabel).toBeInTheDocument();
-  describe("resets the input text box when clicked", () => {
-    
-  });
-
-  describe("resets the game state when clicked", () => {
-
-  });
-
-  describe("focus input textbox when clicked", () => {
-    //toHaveFocus()
-  });
-});
 
