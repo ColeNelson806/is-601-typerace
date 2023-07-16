@@ -21,6 +21,7 @@ const App = () => {
   //     buttonTextItems.splice(matchingIndex, 1);
   //     setButtonTextItems(buttonTextItems);
   //   }
+  //
   //   setCustomSnippet("");
   // }
 
