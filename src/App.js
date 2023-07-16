@@ -38,11 +38,6 @@ const App = () => {
   }, [gameState.timeTaken]);
 
   useEffect(() => {
-    console.log(FetchData);
-    console.log(typeof FetchData);
-    console.log(FetchData());
-    console.log(typeof FetchData());
-
     FetchData().then((value) => {
       if (typeof value == "boolean") setHasErrors(true);
       if (typeof value == "object") setFilms(value);
@@ -115,30 +110,6 @@ const App = () => {
 };
 export default App;
 
-// const FetchData = async (setFilms, setHasErrors) => {
-//   const response = await fetch("https://ghibliapi.vercel.app/films?limit=3")
-//   response
-//     .json()
-//     .then(response => setFilms(response))
-//     .catch(err => setHasErrors(err));
-// }
-
-// const FetchData = (setFilms) => {
-//   setFilms(
-//     [
-//       {
-//         "title": "FakeTitle1",
-//         "description": "FakeDescription1",
-//         "director": "FakeDirector1"
-//       },
-//       {
-//         "title": "FakeTitle2",
-//         "description": "FakeDescription2",
-//         "director": "FakeDirector2"
-//       }
-//     ]
-//   )
-// }
 
 const SnippetSelector = ({films, chooseSnippet, setUserText, resetGameState}) => {
   const selections = [
